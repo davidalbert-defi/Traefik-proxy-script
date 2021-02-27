@@ -1,0 +1,29 @@
+version: '3'
+
+
+services:
+  reverse-proxy:
+    image: traefik:latest
+    container_name: reverse-proxy
+    restart: unless-stopped
+    command:
+      - '--log.level=INFO'
+      - '--providers.docker'
+      - '--api'
+      - '--entrypoints.web.address=:80'
+    labels:
+      - 'traefik.http.routers.traefik.rule=Host(`traefik.localhost`)'
+      - 'traefik.http.routers.traefik.service=api@internal'
+    ports:
+      - '80:80'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/etc/traefik/ysimple/le:/le'
+    networks:
+      - pony_sail
+
+
+networks:
+  pony_sail:
+    external: 
+      name: pony_sail
